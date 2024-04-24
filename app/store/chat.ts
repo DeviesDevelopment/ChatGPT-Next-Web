@@ -30,6 +30,11 @@ export type ChatMessage = RequestMessage & {
   model?: ModelType;
 };
 
+export type ChatRequest = {
+  question: string;
+  chat_history: [string];
+};
+
 export function createMessage(override: Partial<ChatMessage>): ChatMessage {
   return {
     id: nanoid(),
@@ -356,6 +361,8 @@ export const useChatStore = createPersistStore(
           api = new ClientApi(ModelProvider.GeminiPro);
         } else if (identifyDefaultClaudeModel(modelConfig.model)) {
           api = new ClientApi(ModelProvider.Claude);
+        } else if (modelConfig.model.startsWith("langchain")) {
+          api = new ClientApi(ModelProvider.LangChain);
         } else {
           api = new ClientApi(ModelProvider.GPT);
         }

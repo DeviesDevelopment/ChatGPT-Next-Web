@@ -76,6 +76,7 @@ export enum ModelProvider {
   GPT = "GPT",
   GeminiPro = "GeminiPro",
   Claude = "Claude",
+  LangChain = "LangChain",
 }
 
 export const Anthropic = {
@@ -90,6 +91,10 @@ export const OpenaiPath = {
   UsagePath: "dashboard/billing/usage",
   SubsPath: "dashboard/billing/subscription",
   ListModelPath: "v1/models",
+};
+
+export const LangChainPath = {
+  ChatPath: "chat/stream_log",
 };
 
 export const Azure = {
@@ -175,6 +180,8 @@ const anthropicModels = [
   "claude-3-haiku-20240307",
 ];
 
+const langChainModels = ["langchain"];
+
 export const DEFAULT_MODELS = [
   ...openaiModels.map((name) => ({
     name,
@@ -201,6 +208,15 @@ export const DEFAULT_MODELS = [
       id: "anthropic",
       providerName: "Anthropic",
       providerType: "anthropic",
+    },
+  })),
+  ...langChainModels.map((name) => ({
+    name,
+    available: true,
+    provider: {
+      id: "langchain",
+      providerName: "langchain",
+      providerType: "langchain",
     },
   })),
 ] as const;
