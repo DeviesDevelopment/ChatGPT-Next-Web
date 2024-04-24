@@ -1,4 +1,4 @@
-export const OWNER = "Yidadaa";
+export const OWNER = "DeviesDevelopment";
 export const REPO = "ChatGPT-Next-Web";
 export const REPO_URL = `https://github.com/${OWNER}/${REPO}`;
 export const ISSUE_URL = `https://github.com/${OWNER}/${REPO}/issues`;
@@ -99,7 +99,8 @@ export const Azure = {
 export const Google = {
   ExampleEndpoint: "https://generativelanguage.googleapis.com/",
   ChatPath: (modelName: string) => `v1beta/models/${modelName}:generateContent`,
-  VisionChatPath: (modelName: string) => `v1beta/models/${modelName}:generateContent`,
+  VisionChatPath: (modelName: string) =>
+    `v1beta/models/${modelName}:generateContent`,
 };
 
 export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lang
