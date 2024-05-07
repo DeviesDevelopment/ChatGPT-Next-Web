@@ -86,7 +86,10 @@ export class LangChainApi implements LLMApi {
         async onopen(res) {
           clearTimeout(requestTimeoutId);
           const contentType = res.headers.get("content-type");
-          console.log("[OpenAI] request response content type: ", contentType);
+          console.log(
+            "[Langchain] request response content type: ",
+            contentType,
+          );
 
           if (contentType?.startsWith("text/plain")) {
             responseText = await res.clone().text();
@@ -100,6 +103,7 @@ export class LangChainApi implements LLMApi {
               ?.startsWith(EventStreamContentType) ||
             res.status !== 200
           ) {
+            console.log("[Langchain] onopen: not-ok: ", responseText);
             const responseTexts = [responseText];
             let extraInfo = await res.clone().text();
             try {
@@ -121,33 +125,27 @@ export class LangChainApi implements LLMApi {
           }
         },
         onmessage(msg) {
-          if (msg.data === "[DONE]" || finished) {
+          // console.log("[Langchain] onmessage: ", msg.data);
+          if (msg.data === "" || finished) {
             return finish();
           }
           const text = msg.data;
           try {
             const json = JSON.parse(text);
-            const choices = json.choices as Array<{
-              delta: { content: string };
-            }>;
-            const delta = choices[0]?.delta?.content;
-            const textmoderation = json?.prompt_filter_results;
+            // console.log("[Langchain] ops: ", json.ops);
+
+            const isOutputStream = json.ops.some((op: any) =>
+              op.path.includes("/streamed_output_str/-"),
+            );
+            // console.log("[Langchain] isOutputStream: ", isOutputStream);
+
+            if (!isOutputStream) return;
+
+            const delta = json.ops[0].value;
 
             if (delta) {
               remainText += delta;
-            }
-
-            if (
-              textmoderation &&
-              textmoderation.length > 0 &&
-              ServiceProvider.Azure
-            ) {
-              const contentFilterResults =
-                textmoderation[0]?.content_filter_results;
-              console.log(
-                `[${ServiceProvider.Azure}] [Text Moderation] flagged categories result:`,
-                contentFilterResults,
-              );
+              console.log("[Langchain] remainText: ", remainText);
             }
           } catch (e) {
             console.error("[Request] parse error", text, msg);
